@@ -27,6 +27,18 @@ class SalaService(
         return salaRepository.save(sala.copy(id = null))
     }
 
+    fun actualizar(id: Int, salaActualizada: Sala): Sala? {
+        val existente = salaRepository.findById(id).orElse(null) ?: return null
+        val guardada = salaRepository.save(
+            existente.copy(
+                nombre = salaActualizada.nombre,
+                area = salaActualizada.area
+            )
+        )
+        logger.info("Sala ID: {} actualizada a {} ({})", id, guardada.nombre, guardada.area)
+        return guardada
+    }
+
     fun eliminar(id: Int): Boolean {
         if (!salaRepository.existsById(id)) return false
         salaRepository.deleteById(id)

@@ -17,10 +17,13 @@ class DataInitializer {
     fun inicializarSalas(salaRepository: SalaRepository) = CommandLineRunner {
         if (salaRepository.count() == 0L) {
             val salasIniciales = listOf(
+                Sala(nombre = "Sala de Clases 101", area = AreaSala.SALA_GENERICA),
                 Sala(nombre = "Sala de Música 101", area = AreaSala.MUSICA),
                 Sala(nombre = "Biblioteca Central", area = AreaSala.BIBLIOTECA),
                 Sala(nombre = "Cancha Techada", area = AreaSala.DEPORTE),
-                Sala(nombre = "Laboratorio de Ciencias", area = AreaSala.LABORATORIO)
+                Sala(nombre = "Laboratorio de Ciencias", area = AreaSala.LABORATORIO),
+                Sala(nombre = "Cafetería Principal", area = AreaSala.CAFETERIA),
+                Sala(nombre = "Auditorio Principal", area = AreaSala.AUDITORIO)
             )
             salaRepository.saveAll(salasIniciales)
             logger.info("Se han cargado {} salas iniciales en la base de datos.", salasIniciales.size)

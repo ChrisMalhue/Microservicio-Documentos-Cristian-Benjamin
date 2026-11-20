@@ -25,6 +25,13 @@ class SalaController(
     fun crear(@RequestBody sala: Sala): ResponseEntity<Sala> =
         ResponseEntity.status(HttpStatus.CREATED).body(salaService.crear(sala))
 
+    @PutMapping("/{id}")
+    fun actualizar(@PathVariable id: Int, @RequestBody sala: Sala): ResponseEntity<Sala> {
+        val actualizada = salaService.actualizar(id, sala)
+        return if (actualizada != null) ResponseEntity.ok(actualizada)
+        else ResponseEntity.notFound().build()
+    }
+
     @DeleteMapping("/{id}")
     fun eliminar(@PathVariable id: Int): ResponseEntity<Void> =
         if (salaService.eliminar(id)) ResponseEntity.noContent().build()
