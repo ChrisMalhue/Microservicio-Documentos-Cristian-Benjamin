@@ -1,5 +1,6 @@
 package com.example.msdocumentos.model
 
+import com.fasterxml.jackson.annotation.JsonIgnore
 import jakarta.persistence.*
 
 @Entity
@@ -18,6 +19,7 @@ data class Documento(
     @Column(columnDefinition = "TEXT")
     val uri: String = "",
 
-    @Column(columnDefinition = "TEXT")
-    val contenidoBase64: String? = null
+    @JsonIgnore
+    @Column(name = "contenido", columnDefinition = "BYTEA")
+    val contenido: ByteArray? = null
 )
