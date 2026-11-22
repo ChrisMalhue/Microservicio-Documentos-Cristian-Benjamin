@@ -52,7 +52,7 @@ class ReservaController(
 
     @PutMapping("/{id}/rechazar")
     fun rechazar(@PathVariable id: Int, @RequestBody body: Map<String, String>): ResponseEntity<Reserva> {
-        val motivo = body["motivo"] ?: "Sin motivo especificado"
+        val motivo = body["motivo"] ?: ""
         val rechazada = reservaService.rechazarReserva(id, motivo)
         return if (rechazada != null) ResponseEntity.ok(rechazada) else ResponseEntity.notFound().build()
     }
