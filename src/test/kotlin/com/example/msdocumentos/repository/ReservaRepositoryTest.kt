@@ -2,6 +2,7 @@ package com.example.msdocumentos.repository
 
 import com.example.msdocumentos.model.EstadoReserva
 import com.example.msdocumentos.model.Reserva
+import jakarta.persistence.EntityManager
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -14,10 +15,13 @@ import kotlin.test.assertTrue
 /**
  * Pruebas de integración del repositorio: usan una base H2 real, pero en memoria
  * (no se conectan a Neon). Cada prueba corre en una transacción que se revierte al terminar.
+ * Cuando se comprueba un dato guardado, se vacía la memoria de Hibernate (flush + clear) antes de releer,
+ * para que la lectura vaya a la base y no a un objeto en caché.
  */
 @DataJpaTest
 class ReservaRepositoryTest(
-    @Autowired private val repository: ReservaRepository
+    @Autowired private val repository: ReservaRepository,
+    @Autowired private val em: EntityManager
 ) {
 
     /** Reserva ficticia, sin datos reales. */
@@ -34,6 +38,13 @@ class ReservaRepositoryTest(
         fecha = fecha, horaInicio = horaInicio, horaFin = "09:00",
         estado = estado, motivoRechazo = motivoRechazo
     )
+
+    /** Escribe en la base, olvida los objetos en memoria y vuelve a leer desde la base. */
+    private fun releer(id: Int): Reserva? {
+        em.flush()
+        em.clear()
+        return repository.findById(id).orElse(null)
+    }
 
     @BeforeEach
     fun partirConTablaVacia() {
@@ -56,7 +67,7 @@ class ReservaRepositoryTest(
             fecha = "2026-11-24", horaInicio = "08:15", horaFin = "09:00"
         ))
         // Act
-        val leida = repository.findById(guardada.id!!).orElse(null)
+        val leida = releer(guardada.id!!)
         // Assert
         assertEquals(EstadoReserva.PENDIENTE, leida?.estado)
     }
@@ -158,7 +169,7 @@ class ReservaRepositoryTest(
             reserva(estado = EstadoReserva.RECHAZADA, motivoRechazo = motivoLargo)
         )
         // Act
-        val leida = repository.findById(guardada.id!!).orElse(null)
+        val leida = releer(guardada.id!!)
         // Assert
         assertEquals(motivoLargo, leida?.motivoRechazo)
     }
